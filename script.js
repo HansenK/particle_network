@@ -1,104 +1,41 @@
-import { getRandomNumber, getDistanceBetween } from "./utils.js";
+import Grid from "./grid.js";
+import { getDistanceBetween, generateParticles } from "./utils.js";
 
 const ctx = document
   .getElementById("canvas")
   .getContext("2d", { alpha: false });
 
-const NUMBER_OF_PARTICLES = 100;
-const DISTANCE_BETWEEN = 100;
-const DEFAULT_PARTICLE_SIZE = 5;
+const NUMBER_OF_PARTICLES = 150;
+const GRID_CELL_SIZE = 50;
+const MOUSE_CONNECTION_RANGE = 150;
 const CANVAS_WIDTH = window.innerWidth;
 const CANVAS_HEIGHT = window.innerHeight;
 
 let particles = [];
+let grid = [];
 let mouseX;
 let mouseY;
 
-class Particle {
-  constructor(x, y, size = DEFAULT_PARTICLE_SIZE) {
-    this.posX = x;
-    this.posY = y;
-    this.size = size;
-    this.velX = getRandomNumber(-1.5, 1.5);
-    this.velY = getRandomNumber(-1.5, 1.5);
-  }
+const createMouseConnections = () => {
+  if (!mouseX || !mouseY) return;
 
-  draw(ctx) {
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.arc(this.posX, this.posY, this.size, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-  }
+  const cellCol = Math.floor(mouseX / GRID_CELL_SIZE);
+  const cellRow = Math.floor(mouseY / GRID_CELL_SIZE);
+  const neighbors = grid.getNeighbors(
+    { col: cellCol, row: cellRow },
+    MOUSE_CONNECTION_RANGE
+  );
 
-  move() {
-    const newPosX = this.posX + this.velX;
-    const newPosY = this.posY + this.velY;
-
-    if (newPosX < 0 || newPosX > CANVAS_WIDTH) {
-      this.velX = -this.velX;
-    }
-    if (newPosY < 0 || newPosY > CANVAS_HEIGHT) {
-      this.velY = -this.velY;
-    }
-
-    this.posX = newPosX;
-    this.posY = newPosY;
-  }
-
-  drawLine(ctx, toPosition, distance) {
-    ctx.beginPath();
-    ctx.strokeStyle = `rgba(255, 255, 255, ${distance / DISTANCE_BETWEEN})`;
-    ctx.moveTo(this.posX, this.posY);
-    ctx.lineTo(toPosition.posX, toPosition.posY);
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  create_connections(ctx) {
-    for (let a = 0; a < NUMBER_OF_PARTICLES - 1; a++) {
-      const particleA = particles[a];
-
-      for (let b = a + 1; b < NUMBER_OF_PARTICLES; b++) {
-        const particleB = particles[b];
-        const distanceBetween = getDistanceBetween(particleA, particleB);
-
-        if (distanceBetween < DISTANCE_BETWEEN) {
-          particleA.drawLine(ctx, particles[b], distanceBetween);
-        }
-      }
-
-      if (mouseX && mouseY) {
-        const distanceBetween = getDistanceBetween(particleA, {
-          posX: mouseX,
-          posY: mouseY,
-        });
-        if (distanceBetween < DISTANCE_BETWEEN) {
-          particleA.drawLine(
-            ctx,
-            { posX: mouseX, posY: mouseY },
-            distanceBetween
-          );
-        }
-      }
+  if (neighbors && neighbors.length > 0) {
+    for (const particle of neighbors) {
+      particle.drawLine(
+        ctx,
+        { posX: mouseX, posY: mouseY },
+        getDistanceBetween({ posX: mouseX, posY: mouseY }, particle),
+        MOUSE_CONNECTION_RANGE
+      );
     }
   }
-}
-
-const generateParticles = () => {
-  const particles = [];
-
-  for (let i = 0; i <= NUMBER_OF_PARTICLES; i++) {
-    const randX = Math.floor(getRandomNumber(0, CANVAS_WIDTH));
-    const randY = Math.floor(getRandomNumber(0, CANVAS_HEIGHT));
-    const randSize = getRandomNumber(1, 5);
-    const newParticle = new Particle(randX, randY, randSize);
-
-    particles.push(newParticle);
-  }
-
-  return particles;
 };
 
 const draw = () => {
@@ -106,21 +43,27 @@ const draw = () => {
 
   particles.forEach((particle, index) => {
     particle.move();
-    particle.create_connections(ctx);
+    particle.create_connections(ctx, grid);
     particle.draw(ctx, index);
   });
+
+  createMouseConnections();
+
+  grid.updateParticles(particles);
 
   window.requestAnimationFrame(draw);
 };
 
 const init = () => {
-  // Populate first particles
-  particles = generateParticles();
-
   // Setup canvas
   const canvas = document.getElementById("canvas");
   canvas.width = CANVAS_WIDTH;
   canvas.height = CANVAS_HEIGHT;
+
+  // Setup grid
+  grid = new Grid(CANVAS_WIDTH, CANVAS_HEIGHT, GRID_CELL_SIZE);
+  particles = generateParticles(NUMBER_OF_PARTICLES);
+  grid.addParticles(particles);
 
   // Add mouse interaction
   const handleMouseOver = (event) => {
