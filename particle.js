@@ -1,8 +1,7 @@
 import { getRandomNumber, getDistanceBetween } from "./utils.js";
 
+const canvas = document.getElementById("canvas");
 const DEFAULT_PARTICLE_RADIUS = 5;
-const CANVAS_WIDTH = window.innerWidth;
-const CANVAS_HEIGHT = window.innerHeight;
 
 class Particle {
   constructor(x, y, radius = DEFAULT_PARTICLE_RADIUS) {
@@ -29,11 +28,11 @@ class Particle {
     let newPosX = this.posX + this.velX;
     let newPosY = this.posY + this.velY;
 
-    if (newPosX < 0 || newPosX > CANVAS_WIDTH) {
+    if (newPosX < 0 || newPosX > canvas.width) {
       this.velX = -this.velX;
       newPosX = this.posX;
     }
-    if (newPosY < 0 || newPosY > CANVAS_HEIGHT) {
+    if (newPosY < 0 || newPosY > canvas.height) {
       this.velY = -this.velY;
       newPosY = this.posY;
     }

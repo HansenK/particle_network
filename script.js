@@ -1,23 +1,21 @@
 import Grid from "./grid.js";
 import { getDistanceBetween, generateParticles } from "./utils.js";
 
-const ctx = document
-  .getElementById("canvas")
-  .getContext("2d", { alpha: false });
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", { alpha: false });
 
 const NUMBER_OF_PARTICLES = 150;
 const GRID_CELL_SIZE = 50;
 const MOUSE_CONNECTION_RANGE = 150;
-const CANVAS_WIDTH = window.innerWidth;
-const CANVAS_HEIGHT = window.innerHeight;
 
+let resizeTimer;
 let particles = [];
-let grid = [];
+let grid;
 let mouseX;
 let mouseY;
 
 const createMouseConnections = () => {
-  if (!mouseX || !mouseY) return;
+  if (!mouseX || !mouseY || !!resizeTimer) return;
 
   const cellCol = Math.floor(mouseX / GRID_CELL_SIZE);
   const cellRow = Math.floor(mouseY / GRID_CELL_SIZE);
@@ -39,7 +37,9 @@ const createMouseConnections = () => {
 };
 
 const draw = () => {
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  if (!!resizeTimer) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   particles.forEach((particle, index) => {
     particle.move();
@@ -57,11 +57,11 @@ const draw = () => {
 const init = () => {
   // Setup canvas
   const canvas = document.getElementById("canvas");
-  canvas.width = CANVAS_WIDTH;
-  canvas.height = CANVAS_HEIGHT;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
   // Setup grid
-  grid = new Grid(CANVAS_WIDTH, CANVAS_HEIGHT, GRID_CELL_SIZE);
+  grid = new Grid(canvas.width, canvas.height, GRID_CELL_SIZE);
   particles = generateParticles(NUMBER_OF_PARTICLES);
   grid.addParticles(particles);
 
@@ -71,6 +71,25 @@ const init = () => {
     mouseY = event.clientY;
   };
   document.addEventListener("mousemove", handleMouseOver);
+
+  // Handle window resize
+  const handleResize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    particles = [];
+    grid = null;
+    clearTimeout(resizeTimer);
+
+    resizeTimer = setTimeout(() => {
+      grid = new Grid(window.innerWidth, window.innerHeight, GRID_CELL_SIZE);
+      particles = generateParticles(NUMBER_OF_PARTICLES);
+      grid.addParticles(particles);
+      resizeTimer = null;
+      window.requestAnimationFrame(draw);
+    }, 300);
+  };
+  window.addEventListener("resize", handleResize);
 
   // Start loop
   window.requestAnimationFrame(draw);

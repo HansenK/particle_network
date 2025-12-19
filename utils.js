@@ -1,7 +1,6 @@
 import Particle from "./particle.js";
 
-const CANVAS_WIDTH = window.innerWidth;
-const CANVAS_HEIGHT = window.innerHeight;
+const canvas = document.getElementById("canvas");
 
 export const getRandomNumber = (min = 0, max = 1, round = false) => {
   if (max <= min) {
@@ -22,10 +21,9 @@ export const getDistanceBetween = (
 
 export const generateParticles = (numberOfParticles) => {
   const particles = [];
-
   for (let i = 0; i <= numberOfParticles; i++) {
-    const randX = Math.floor(getRandomNumber(0, CANVAS_WIDTH));
-    const randY = Math.floor(getRandomNumber(0, CANVAS_HEIGHT));
+    const randX = Math.floor(getRandomNumber(0, canvas.width));
+    const randY = Math.floor(getRandomNumber(0, canvas.height));
     const randRadius = getRandomNumber(1, 4);
     const newParticle = new Particle(randX, randY, randRadius);
 
