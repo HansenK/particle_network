@@ -8,8 +8,8 @@ class Particle {
     this.posX = x;
     this.posY = y;
     this.radius = radius;
-    this.velX = getRandomNumber(-1.5, 1.5);
-    this.velY = getRandomNumber(-1.5, 1.5);
+    this.velX = getRandomNumber(-1.0, 1.0);
+    this.velY = getRandomNumber(-1.0, 1.0);
   }
 
   get range() {
@@ -46,7 +46,7 @@ class Particle {
     ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / range})`;
     ctx.moveTo(this.posX, this.posY);
     ctx.lineTo(toPosition.posX, toPosition.posY);
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.stroke();
   }
 
