@@ -3,23 +3,23 @@ import Particle from "./particle.js";
 const canvas = document.getElementById("canvas");
 
 /**
- * Generates a random integer within a specified inclusive range.
+ * Generates a random number within a specified inclusive range.
  * Both min and max values are inclusive.
+ * Returns floating points as well, not only integers unless `roud` is true.
  * Throws an error if max is less than min.
  *
- * @param {number} [min=0] - The minimum integer value (inclusive).
- * @param {number} [max=1] - The maximum integer value (inclusive).
- * @returns {number} A random integer between min and max (inclusive).
+ * @param {number} [min=0] - The minimum value (inclusive).
+ * @param {number} [max=1] - The maximum value (inclusive).
+ * @param {boolean} [roud=false] - If true, the result is rounded to the nearest integer.
+ * @returns {number} A random number between min and max (inclusive), rounded if `roud` is true.
  * @throws {Error} If max is less than min.
  */
-export const getRandomNumber = (min = 0, max = 1) => {
+export const getRandomNumber = (min = 0, max = 1, roud = false) => {
   if (max < min) {
     throw new Error("Make sure max value is greater than min value");
   }
-
-  const minCeiled = Math.ceil(min);
-  const maxFloored = Math.floor(max);
-  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+  const random = Math.random() * (max - min) + min;
+  return roud ? Math.round(random) : random;
 };
 
 /**
@@ -53,14 +53,27 @@ export const getDistanceBetween = (
  */
 export const generateParticles = (numberOfParticles) => {
   const particles = [];
-  for (let i = 0; i <= numberOfParticles; i++) {
+  for (let i = 0; i < numberOfParticles; i++) {
     const randX = Math.floor(getRandomNumber(0, canvas.width));
     const randY = Math.floor(getRandomNumber(0, canvas.height));
-    const randRadius = getRandomNumber(1, 4);
+    const randRadius = getRandomNumber(2, 4, true);
     const newParticle = new Particle(randX, randY, randRadius);
 
     particles.push(newParticle);
   }
 
   return particles;
+};
+
+/**
+ * Returns a random element from the provided list.
+ *
+ * @param {Array} list - The array of elements to choose from
+ * @returns {*} A random element from the list
+ */
+export const getRandomFromList = (list) => {
+  if (!Array.isArray(list) || list.length === 0) {
+    throw new Error("getRandomFromList: list must be a non-empty array");
+  }
+  return list[Math.floor(Math.random() * list.length)];
 };

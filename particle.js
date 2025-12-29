@@ -1,4 +1,4 @@
-import { getRandomNumber, getDistanceBetween } from "./utils.js";
+import { getDistanceBetween, getRandomFromList } from "./utils.js";
 
 const canvas = document.getElementById("canvas");
 const DEFAULT_PARTICLE_RADIUS = 5;
@@ -8,8 +8,8 @@ class Particle {
     this.posX = x;
     this.posY = y;
     this.radius = radius;
-    this.velX = getRandomNumber(-1.0, 1.0);
-    this.velY = getRandomNumber(-1.0, 1.0);
+    this.velX = getRandomFromList([-1, 1]);
+    this.velY = getRandomFromList([-1, 1]);
   }
 
   get range() {
