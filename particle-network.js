@@ -16,9 +16,12 @@ class ParticleNetwork {
 
     this.gridCellSize = gridCellSize;
     this.grid = new Grid(this.canvas.width, this.canvas.height, gridCellSize);
-    const particles = generateParticles(numberOfParticles);
-    this.particles = particles;
-    this.grid.addParticles(particles);
+    this.particles = generateParticles(
+      numberOfParticles,
+      this.canvas.width,
+      this.canvas.height
+    );
+    this.grid.addParticles(this.particles);
 
     this.mouseConnectionRange = mouseConnectionRange;
     this.mouseX = null;

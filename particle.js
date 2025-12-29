@@ -1,15 +1,16 @@
 import { getDistanceBetween, getRandomFromList } from "./utils.js";
 
-const canvas = document.getElementById("canvas");
 const DEFAULT_PARTICLE_RADIUS = 5;
 
 class Particle {
-  constructor(x, y, radius = DEFAULT_PARTICLE_RADIUS) {
+  constructor(x, y, radius = DEFAULT_PARTICLE_RADIUS, maxX, maxY) {
     this.posX = x;
     this.posY = y;
     this.radius = radius;
     this.velX = getRandomFromList([-1, 1]);
     this.velY = getRandomFromList([-1, 1]);
+    this.maxX = maxX;
+    this.maxY = maxY;
   }
 
   get range() {
@@ -28,11 +29,11 @@ class Particle {
     let newPosX = this.posX + this.velX;
     let newPosY = this.posY + this.velY;
 
-    if (newPosX < 0 || newPosX > canvas.width) {
+    if (newPosX < 0 || newPosX > this.maxX) {
       this.velX = -this.velX;
       newPosX = this.posX;
     }
-    if (newPosY < 0 || newPosY > canvas.height) {
+    if (newPosY < 0 || newPosY > this.maxY) {
       this.velY = -this.velY;
       newPosY = this.posY;
     }

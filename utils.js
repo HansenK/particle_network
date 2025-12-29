@@ -1,7 +1,5 @@
 import Particle from "./particle.js";
 
-const canvas = document.getElementById("canvas");
-
 /**
  * Generates a random number within a specified inclusive range.
  * Both min and max values are inclusive.
@@ -45,19 +43,19 @@ export const getDistanceBetween = (
 
 /**
  * Generates an array of Particle objects with random positions and sizes.
- * Each particle is placed at a random position within the canvas bounds
+ * Each particle is placed at a random position within the maxX and maxY bounds
  * and assigned a random radius between 1 and 4 pixels.
  *
  * @param {number} numberOfParticles - The number of particles to generate
  * @returns {Particle[]} An array of Particle instances
  */
-export const generateParticles = (numberOfParticles) => {
+export const generateParticles = (numberOfParticles, maxX, maxY) => {
   const particles = [];
   for (let i = 0; i < numberOfParticles; i++) {
-    const randX = Math.floor(getRandomNumber(0, canvas.width));
-    const randY = Math.floor(getRandomNumber(0, canvas.height));
+    const randX = Math.floor(getRandomNumber(0, maxX));
+    const randY = Math.floor(getRandomNumber(0, maxY));
     const randRadius = getRandomNumber(2, 4, true);
-    const newParticle = new Particle(randX, randY, randRadius);
+    const newParticle = new Particle(randX, randY, randRadius, maxX, maxY);
 
     particles.push(newParticle);
   }
