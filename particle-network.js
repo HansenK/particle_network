@@ -33,7 +33,12 @@ class ParticleNetwork {
       this.mouseX = event.clientX;
       this.mouseY = event.clientY;
     };
+    const handleMouseLeave = () => {
+      this.mouseX = null;
+      this.mouseY = null;
+    };
     canvas.addEventListener("mousemove", handleMouseOver);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
 
     // Handle window resize
     const handleResize = () => {
