@@ -123,7 +123,8 @@ class ParticleNetwork {
             { posX: this.mouseX, posY: this.mouseY },
             particle
           ),
-          this.mouseConnectionRange
+          this.mouseConnectionRange,
+          this.particleColor
         );
       }
     }
