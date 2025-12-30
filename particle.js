@@ -1,4 +1,8 @@
-import { getDistanceBetween, getRandomFromList } from "./utils.js";
+import {
+  getDistanceBetween,
+  getRandomFromList,
+  getUpdatedRgbaOpacity,
+} from "./utils.js";
 
 const DEFAULT_PARTICLE_RADIUS = 5;
 
@@ -17,8 +21,8 @@ class Particle {
     return this.radius * 50;
   }
 
-  draw(ctx) {
-    ctx.fillStyle = "#fff";
+  draw(ctx, color = "rgba(255, 255, 255, 1)") {
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(this.posX, this.posY, this.radius, 0, 2 * Math.PI);
     ctx.closePath();
@@ -42,23 +46,29 @@ class Particle {
     this.posY = newPosY;
   }
 
-  drawLine(ctx, toPosition, distance, range = this.range) {
+  drawLine(
+    ctx,
+    toPosition,
+    distance,
+    range = this.range,
+    color = "rgba(255, 255, 255, 1)"
+  ) {
     ctx.beginPath();
-    ctx.strokeStyle = `rgba(255, 255, 255, ${1 - distance / range})`;
+    ctx.strokeStyle = getUpdatedRgbaOpacity(color, 1 - distance / range);
     ctx.moveTo(this.posX, this.posY);
     ctx.lineTo(toPosition.posX, toPosition.posY);
     ctx.lineWidth = 1.5;
     ctx.stroke();
   }
 
-  create_connections(ctx, grid) {
+  create_connections(ctx, grid, color = "rgba(255, 255, 255, 1)") {
     const neighbors = grid.getNeighbors(this.gridCell, this.range);
 
     if (neighbors && neighbors.length > 0) {
       for (const neighbor of neighbors) {
         const distanceBetween = getDistanceBetween(this, neighbor);
         if (distanceBetween < this.range) {
-          this.drawLine(ctx, neighbor, distanceBetween);
+          this.drawLine(ctx, neighbor, distanceBetween, this.range, color);
         }
       }
     }

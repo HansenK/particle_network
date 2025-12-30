@@ -1,7 +1,3 @@
 body {
   margin: 0;
 }
-
-canvas {
-  background: oklch(13% 0.028 261.692);
-}

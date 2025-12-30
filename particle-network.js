@@ -7,13 +7,19 @@ class ParticleNetwork {
       numberOfParticles = 150,
       gridCellSize = 50,
       mouseConnectionRange = 150,
+      particleColor = "rgba(255, 255, 255, 1)",
+      backgroundColor = "rgba(0, 0, 0, 1)",
     } = options;
 
+    // Setup canvas and content
     this.canvas = canvas;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     this.ctx = canvas.getContext("2d", { alpha: false });
+    this.particleColor = particleColor;
+    this.backgroundColor = backgroundColor;
 
+    // Setup grid
     this.gridCellSize = gridCellSize;
     this.grid = new Grid(this.canvas.width, this.canvas.height, gridCellSize);
     this.particles = generateParticles(
@@ -23,12 +29,12 @@ class ParticleNetwork {
     );
     this.grid.addParticles(this.particles);
 
+    // Setup mouse interaction
     this.mouseConnectionRange = mouseConnectionRange;
     this.mouseX = null;
     this.mouseY = null;
     this.resizeTimer = null;
 
-    // Add mouse interaction
     const handleMouseOver = (event) => {
       this.mouseX = event.clientX;
       this.mouseY = event.clientY;
@@ -68,17 +74,31 @@ class ParticleNetwork {
     window.addEventListener("resize", handleResize);
   }
 
+  setColors({
+    particleColor = "rgba(255, 255, 255, 1)",
+    backgroundColor = "rgba(0, 0, 0, 1)",
+  }) {
+    this.particleColor = particleColor;
+    this.backgroundColor = backgroundColor;
+  }
+
   draw() {
     if (!!this.resizeTimer) return;
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.particles.forEach((particle, index) => {
+    // Background color
+    this.ctx.fillStyle = this.backgroundColor;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Particles
+    this.particles.forEach((particle) => {
       particle.move();
-      particle.create_connections(this.ctx, this.grid);
-      particle.draw(this.ctx, index);
+      particle.create_connections(this.ctx, this.grid, this.particleColor);
+      particle.draw(this.ctx, this.particleColor);
     });
 
+    // Mouse connections
     this.createMouseConnections();
     this.grid.updateParticles(this.particles);
     window.requestAnimationFrame(() => this.draw());

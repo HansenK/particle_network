@@ -75,3 +75,21 @@ export const getRandomFromList = (list) => {
   }
   return list[Math.floor(Math.random() * list.length)];
 };
+
+/**
+ * Updates the opacity value (alpha channel) of a given RGBA color string.
+ *
+ * @param {string} rgba - The original rgba color string (e.g., "rgba(255, 255, 255, 1)").
+ * @param {number} opacity - The new opacity value to set (between 0 and 1).
+ * @returns {string} The updated rgba color string with the new opacity.
+ */
+export const getUpdatedRgbaOpacity = (rgba, opacity = 1) => {
+  let rgbaParams = rgba
+    .replaceAll("rgba(", "")
+    .replaceAll(")", "")
+    .replaceAll(" ", "")
+    .split(",");
+  rgbaParams[3] = opacity.toString();
+
+  return `rgba(${rgbaParams.join(",")})`;
+};
