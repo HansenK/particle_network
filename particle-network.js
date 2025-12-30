@@ -55,9 +55,12 @@ class ParticleNetwork {
           window.innerHeight,
           gridCellSize
         );
-        this.particles = generateParticles(numberOfParticles);
+        this.particles = generateParticles(
+          numberOfParticles,
+          this.canvas.width,
+          this.canvas.height
+        );
         this.grid.addParticles(this.particles);
-        console.log({ particles: this.particles, grid: this.grid }, 222);
         this.resizeTimer = null;
         window.requestAnimationFrame(() => this.draw());
       }, 300);
